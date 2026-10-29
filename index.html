@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimodal Attendance & Engagement Agent | Classroom Intelligence</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Chart.js for real-time engagement graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-title">Multimodal Attendance & Engagement Agent</div>
+        <div class="brand-subtitle">AI-Powered Privacy-Preserving Classroom Intelligence</div>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a href="/" class="nav-link active">Live Session</a>
+      <a href="/history" class="nav-link">Session History</a>
+      <a href="/settings" class="nav-link">System Settings</a>
+    </div>
+
+    <div class="session-controls">
+      <span style="font-size: 0.8rem; color: #94a3b8; margin-right: 0.5rem;">
+        Session: <strong style="color: #cbd5e1;">{{ session_id }}</strong>
+      </span>
+      {% if session_active %}
+        <button id="btnStopSession" class="btn btn-danger">⏹ Conclude Session</button>
+      {% else %}
+        <button id="btnStartSession" class="btn btn-primary">▶ Start New Session</button>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- Top Alert Banner (Hidden by default) -->
+    <div id="systemAlertBanner" style="display: none; padding: 0.85rem 1.25rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; align-items: center; justify-content: space-between;">
+    </div>
+
+    <!-- Top Metrics Grid -->
+    <div class="metrics-grid">
+      <!-- Metric 1: Fused Engagement -->
+      <div class="metric-card">
+        <div class="metric-title">Fused Engagement E(t)</div>
+        <div class="metric-value-row">
+          <div id="metricFusedScore" class="metric-value" style="color: #818cf8;">75.0%</div>
+          <div id="badgeCategory" class="metric-badge badge-emerald">High Interaction</div>
+        </div>
+        <div style="font-size: 0.75rem; color: #94a3b8;">45% Vision + 20% Motion + 35% Audio</div>
+      </div>
+
+      <!-- Metric 2: Attendance Verification -->
+      <div class="metric-card">
+        <div class="metric-title">Sustained Attendance</div>
+        <div class="metric-value-row">
+          <div id="metricPresentStudents" class="metric-value" style="color: #34d399;">0 / 0</div>
+          <div class="metric-badge badge-blue">Sustained &gt; 3s</div>
+        </div>
+        <div style="font-size: 0.75rem; color: #94a3b8;">Verifying continuous presence</div>
+      </div>
+
+      <!-- Metric 3: Classroom Acoustics -->
+      <div class="metric-card">
+        <div class="metric-title">Acoustic Dynamics</div>
+        <div class="metric-value-row">
+          <div id="metricAcousticState" class="metric-value" style="font-size: 1.15rem; color: #38bdf8;">INSTRUCTIONAL MONOLOGUE</div>
+        </div>
+        <div style="font-size: 0.75rem; color: #94a3b8;">Vocal Activity &amp; Interaction Peaks</div>
+      </div>
+
+      <!-- Metric 4: Visual Attention Proxy -->
+      <div class="metric-card">
+        <div class="metric-title">Visual Attention Index</div>
+        <div class="metric-value-row">
+          <div id="metricVisualAttention" class="metric-value" style="color: #f59e0b;">82.4%</div>
+          <div class="metric-badge badge-amber">Head Pose &amp; Gaze</div>
+        </div>
+        <div style="font-size: 0.75rem; color: #94a3b8;">Frontal Gaze vs Turned Away</div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+
+      <!-- Left Column: Video Stage & Telemetry -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📹</span> Live Classroom Feed &amp; Vision Tracking
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btnToggleSimulator" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+              🔄 Toggle Camera / Simulator
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="video-stage">
+            <div class="video-overlay-hud">
+              <div class="live-pulse"></div>
+              <span id="cameraHudText">INITIALIZING FEED...</span>
+            </div>
+            <!-- Annotated Frame display -->
+            <img id="annotatedImage" alt="Classroom Video Stream" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480'><rect width='100%' height='100%' fill='%231e293b'/><text x='50%' y='50%' fill='%2394a3b8' font-family='sans-serif' font-size='16' text-anchor='middle'>Connecting Video Feed &amp; Multimodal Tracker...</text></svg>">
+          </div>
+
+          <!-- Audio Meter -->
+          <div style="margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8;">
+              <span>Acoustic Energy Level (Microphone Input)</span>
+              <span id="audioMeterText">Energy: 0.030 RMS (14%)</span>
+            </div>
+            <div class="audio-meter-bar">
+              <div id="audioMeterFill" class="audio-meter-fill"></div>
+            </div>
+          </div>
+
+          <!-- Recorded Video Upload for Offline Analysis -->
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 0.82rem; color: #94a3b8;">
+              Have a pre-recorded lecture video?
+            </div>
+            <form id="videoUploadForm" action="/api/upload_video" method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.5rem;">
+              <input type="file" name="video" accept="video/*" id="videoFileInput" style="display: none;" onchange="document.getElementById('videoUploadForm').submit();">
+              <button type="button" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;" onclick="document.getElementById('videoFileInput').click();">
+                📁 Upload Session Video
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: AI Assistant & Real-time Graph -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        <!-- Card: AI Teaching Assistant -->
+        <div class="card ai-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🤖</span> AI Pedagogical Reasoning Agent
+            </div>
+            <button id="btnTriggerAi" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+              ✨ Generate Advice
+            </button>
+          </div>
+
+          <div class="card-body">
+            <div id="aiSuggestionBox" class="ai-recommendation-box">
+              <div class="ai-rec-header">
+                <span class="metric-badge badge-blue">ACTIVE PACING</span>
+                <span style="font-size: 0.75rem; color: #94a3b8;">Priority: <strong style="color: #34d399;">NORMAL</strong></span>
+              </div>
+              <p style="font-size: 0.92rem; line-height: 1.45; color: #f1f5f9; margin-top: 0.35rem;">
+                Classroom attention is healthy and sustained. Continue with current instructional pacing. If introducing complex mathematical proofs, prepare an active recall checkpoint.
+              </p>
+              <div class="ai-prompt-box">
+                💬 Teacher Prompt: "Notice how this architectural block connects to our sustained presence logic."
+              </div>
+              <div style="margin-top: 0.85rem; display: flex; gap: 0.5rem;">
+                <button class="btn btn-primary" id="btnGenerateQuiz">🎯 Launch Quick Quiz</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Multimodal Engagement Curves Chart -->
+        <div class="card" style="flex: 1; min-height: 280px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📈</span> Multimodal Engagement Trend (Real-time Timeline)
+            </div>
+          </div>
+          <div class="card-body" style="position: relative; height: 230px;">
+            <canvas id="engagementChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Card: Attendance Logs Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>📋</span> Automated Attendance Tracking &amp; Student Dynamics Roster
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnExportCsv" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+            📥 Export Attendance CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body" style="padding: 0;">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Attendance Status</th>
+                <th>Attention Index</th>
+                <th>Head Pose / Gaze</th>
+                <th>Sustained Presence</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: #94a3b8; padding: 2rem;">
+                  Tracking participants in classroom frame...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive Quiz Modal -->
+  <div id="quizModal" class="modal-backdrop">
+    <div class="modal-content" id="quizModalContent">
+      <!-- Populated dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/camera_stream.js"></script>
+  <script src="/static/js/audio_recorder.js"></script>
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

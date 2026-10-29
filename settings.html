@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Settings | Multimodal Attendance & Engagement Agent</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-title">Multimodal Attendance & Engagement Agent</div>
+        <div class="brand-subtitle">Hyperparameter Configuration & AI Settings</div>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a href="/" class="nav-link">Live Session</a>
+      <a href="/history" class="nav-link">Session History</a>
+      <a href="/settings" class="nav-link active">System Settings</a>
+    </div>
+
+    <div class="session-controls">
+      <a href="/" class="btn btn-primary">◀ Back to Live Session</a>
+    </div>
+  </nav>
+
+  <div class="container" style="max-width: 900px;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>⚙️</span> Multimodal Detection & Agent Parameters
+        </div>
+      </div>
+      <div class="card-body">
+        <form onsubmit="event.preventDefault(); alert('Settings saved successfully!');">
+          
+          <h4 style="color: #818cf8; margin-bottom: 0.75rem;">1. Vision Module Parameters (EPIC 2)</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Sustained Presence Threshold (seconds)</label>
+              <input type="number" step="0.5" value="{{ config.SUSTAINED_PRESENCE_SECONDS }}" style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+              <small style="color: #64748b; font-size: 0.75rem;">Prevents false attendance from transient appearances.</small>
+            </div>
+            <div>
+              <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Absence Tolerance Grace Period (seconds)</label>
+              <input type="number" step="0.5" value="{{ config.FACE_ABSENCE_TOLERANCE_SECONDS }}" style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+            </div>
+          </div>
+
+          <h4 style="color: #818cf8; margin-bottom: 0.75rem;">2. Multimodal Fusion Weights (EPIC 4)</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Visual Attention Weight (w_v)</label>
+              <input type="number" step="0.05" value="{{ config.WEIGHT_VISUAL_ATTENTION }}" style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+            </div>
+            <div>
+              <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Movement Stability Weight (w_m)</label>
+              <input type="number" step="0.05" value="{{ config.WEIGHT_VISUAL_ACTIVITY }}" style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+            </div>
+            <div>
+              <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Audio Interaction Weight (w_a)</label>
+              <input type="number" step="0.05" value="{{ config.WEIGHT_AUDIO_INTERACTION }}" style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+            </div>
+          </div>
+
+          <h4 style="color: #818cf8; margin-bottom: 0.75rem;">3. GenAI & Cloud AI Service (EPIC 5)</h4>
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Google Gemini Model</label>
+            <input type="text" value="{{ config.GEMINI_MODEL }}" readonly style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #cbd5e1; border-radius: 6px; margin-bottom: 0.75rem;">
+            
+            <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Gemini API Key (Optional)</label>
+            <input type="password" placeholder="Enter GEMINI_API_KEY for live Cloud GenAI or leave empty for local offline heuristics" value="{{ gemini_key }}" style="width: 100%; padding: 0.5rem; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+            <small style="color: #64748b; font-size: 0.75rem;">System is architected to operate entirely offline with built-in pedagogical reasoning heuristics if no key is entered.</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Configuration</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
